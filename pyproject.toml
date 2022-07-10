@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "pre_commit_hooks"
-version = "0.1.5"
+version = "0.1.6"
 description = "My pre commit hooks"
 authors = ["Oleksandr Kolodkin <alexandr.kolodkin@gmail.com>"]
 homepage = "https://github.com/pre-commit/pre-commit-hooks"
@@ -47,3 +47,4 @@ target-version = ['py37', 'py38', 'py39', 'py310']
 
 [tool.poetry.scripts]
 coverage-badge = "pre_commit_hooks.coverage_badge:main"
+coverage-html-report = "pre_commit_hooks.coverage_html_report:main"

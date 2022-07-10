@@ -56,9 +56,9 @@ def load_badge(rate: float, colors: str, badge: str, args: Optional[str] = None)
         badge_output.write(r.content)
 
 
-def make_badge(report: str, badge: str, colors: str, options: Dict[str, str]) -> int:
+def make_badge(db: str, badge: str, colors: str, options: Dict[str, str]) -> int:
     try:
-        cov = Coverage(report)
+        cov = Coverage(db)
         cov.load()
         rate = cov.report(file=StringIO())
         args = format_args(options)
@@ -112,7 +112,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         options["logo"] = args.logo
 
     return make_badge(
-        report=args.input,
+        db=args.input,
         badge=args.output,
         colors=args.colors,
         options=options,

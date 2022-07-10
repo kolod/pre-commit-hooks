@@ -5,3 +5,11 @@
     pass_filenames: false
     always_run: true
     stages: [commit, push, manual]
+-   id: coverage-html-report
+    name: generate the coverage html report
+    entry: coverage-html-report
+    language: python
+    pass_filenames: false
+    always_run: true
+    stages: [commit, push, manual]
+
