@@ -7,6 +7,7 @@
 
 from __future__ import annotations
 
+import os
 import argparse
 import requests
 from coverage import Coverage, CoverageException
@@ -31,12 +32,17 @@ def coverage_color(rate: float, colors: str) -> str:
     return colors[-1]
 
 
+def make_dirs_if_neaded(path: str) -> None:
+    os.makedirs(os.path.dirname(path))
+
+
 def format_args(options: Dict[str, str]) -> str:
     keys = ["style", "logo"]
     return "&".join([f"{k}={v.strip()}" for k, v in options.items() if k in keys])
 
 
 def load_badge(rate: float, colors: str, badge: str, args: Optional[str] = None) -> None:
+    make_dirs_if_neaded(badge)
     color = coverage_color(rate, colors)
     url = f"https://img.shields.io/badge/coverage-{rate:.1f}%25-{color}"
     if args is not None:
