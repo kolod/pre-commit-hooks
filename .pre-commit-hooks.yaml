@@ -2,6 +2,6 @@
     name: generate the coverage badge
     entry: coverage-badge
     language: python
-    stages:
-        - commit
-        - manual
+    pass_filenames: false
+    always_run: true
+    stages: [commit, push, manual]
