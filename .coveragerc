@@ -1,0 +1,4 @@
+# Configuration for coverage.py
+[run]
+omit = tests/*, */__init__.py
+source = pre_commit_hooks

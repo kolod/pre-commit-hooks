@@ -132,4 +132,4 @@ dmypy.json
 .idea
 
 # Temp files
-/tests/actual_*.svg
+/tests/files/actual_*.svg

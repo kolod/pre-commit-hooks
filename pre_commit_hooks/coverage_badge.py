@@ -8,10 +8,11 @@
 from __future__ import annotations
 
 import os
-import argparse
-import requests
+from io import StringIO
 from coverage import Coverage, CoverageException
 from typing import Sequence, Optional, Dict
+from argparse import ArgumentParser
+from requests import get
 
 
 def coverage_color(rate: float, colors: str) -> str:
@@ -32,8 +33,11 @@ def coverage_color(rate: float, colors: str) -> str:
     return colors[-1]
 
 
-def make_dirs_if_neaded(path: str) -> None:
-    os.makedirs(os.path.dirname(path))
+def make_dirs_if_needed(path: str) -> None:
+    abs_path = os.path.abspath(path)
+    dir_path = os.path.dirname(abs_path)
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
 
 
 def format_args(options: Dict[str, str]) -> str:
@@ -42,13 +46,13 @@ def format_args(options: Dict[str, str]) -> str:
 
 
 def load_badge(rate: float, colors: str, badge: str, args: Optional[str] = None) -> None:
-    make_dirs_if_neaded(badge)
+    make_dirs_if_needed(badge)
     color = coverage_color(rate, colors)
     url = f"https://img.shields.io/badge/coverage-{rate:.1f}%25-{color}"
     if args is not None:
         url += "?" + args
     with open(badge, "wb") as badge_output:
-        r = requests.get(url, allow_redirects=True)
+        r = get(url, allow_redirects=True)
         badge_output.write(r.content)
 
 
@@ -56,7 +60,7 @@ def make_badge(report: str, badge: str, colors: str, options: Dict[str, str]) ->
     try:
         cov = Coverage(report)
         cov.load()
-        rate = cov.report()
+        rate = cov.report(file=StringIO())
         args = format_args(options)
         load_badge(rate, colors, badge, args)
         return 0
@@ -71,9 +75,9 @@ def make_badge(report: str, badge: str, colors: str, options: Dict[str, str]) ->
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser()
+    parser = ArgumentParser()
 
-    parser.add_argument("--input", type=str, default="./.coverage", help="Coverage report file")
+    parser.add_argument("--input", type=str, default="./test.coverage", help="Coverage report file")
 
     parser.add_argument("--output", type=str, default="./coverage.svg", help="Coverage badge file")
 
@@ -104,6 +108,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     options = {}
     if args.style is not None:
         options["style"] = args.style
+    if args.logo is not None:
+        options["logo"] = args.logo
 
     return make_badge(
         report=args.input,
