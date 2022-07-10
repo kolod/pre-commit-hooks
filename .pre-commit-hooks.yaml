@@ -1,0 +1,7 @@
+-   id: coverage-badge
+    name: generate the coverage badge
+    entry: coverage-badge
+    language: python
+    stages:
+        - commit
+        - manual
