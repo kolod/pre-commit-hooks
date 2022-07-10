@@ -14,96 +14,98 @@ from typing import Sequence, Optional, Dict
 
 
 def coverage_color(rate: float, colors: str) -> str:
-	"""
-	Return the badge color for a given rate and colors string\n
-	:param coverage rate: in percentage
-	:param colors: in format "color0 < % < color1 < % ... < color_n"
-	:return color as string:
-	"""
-	data = colors.split('<')
-	colors = [x.strip() for i, x in enumerate(data) if i % 2 == 0]
-	rates = [float(x.strip()) for i, x in enumerate(data) if i % 2 == 1]
-	if len(rates) + 1 != len(colors):
-		raise ValueError("Invalid colors array")
-	for i, r in enumerate(rates):
-		if rate < r:
-			return colors[i]
-	return colors[-1]
+    """
+    Return the badge color for a given rate and colors string\n
+    :param coverage rate: in percentage
+    :param colors: in format "color0 < % < color1 < % ... < color_n"
+    :return color as string:
+    """
+    data = colors.split("<")
+    colors = [x.strip() for i, x in enumerate(data) if i % 2 == 0]
+    rates = [float(x.strip()) for i, x in enumerate(data) if i % 2 == 1]
+    if len(rates) + 1 != len(colors):
+        raise ValueError("Invalid colors array")
+    for i, r in enumerate(rates):
+        if rate < r:
+            return colors[i]
+    return colors[-1]
 
 
 def format_args(options: Dict[str, str]) -> str:
-	keys = ['style', 'logo']
-	return '&'.join([f"{k}={v.strip()}" for k, v in options.items() if k in keys])
+    keys = ["style", "logo"]
+    return "&".join([f"{k}={v.strip()}" for k, v in options.items() if k in keys])
 
 
 def load_badge(rate: float, colors: str, badge: str, args: Optional[str] = None) -> None:
-	color = coverage_color(rate, colors)
-	url = f"https://img.shields.io/badge/coverage-{rate:.1f}%25-{color}"
-	if args is not None:
-		url += '?' + args
-	with open(badge, "wb") as badge_output:
-		r = requests.get(url, allow_redirects=True)
-		badge_output.write(r.content)
+    color = coverage_color(rate, colors)
+    url = f"https://img.shields.io/badge/coverage-{rate:.1f}%25-{color}"
+    if args is not None:
+        url += "?" + args
+    with open(badge, "wb") as badge_output:
+        r = requests.get(url, allow_redirects=True)
+        badge_output.write(r.content)
 
 
 def make_badge(report: str, badge: str, colors: str, options: Dict[str, str]) -> int:
-	try:
-		cov = Coverage(report)
-		cov.load()
-		rate = cov.report()
-		args = format_args(options)
-		load_badge(rate, colors, badge, args)
-		return 0
+    try:
+        cov = Coverage(report)
+        cov.load()
+        rate = cov.report()
+        args = format_args(options)
+        load_badge(rate, colors, badge, args)
+        return 0
 
-	except CoverageException as e:
-		print(str(e))
-		return 1
+    except CoverageException as e:
+        print(str(e))
+        return 1
 
-	except ValueError as e:
-		print(str(e))
-		return 2
+    except ValueError as e:
+        print(str(e))
+        return 2
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-	parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser()
 
-	parser.add_argument(
-		'--input', type=str, default='./.coverage',
-		help='Coverage report file'
-	)
+    parser.add_argument("--input", type=str, default="./.coverage", help="Coverage report file")
 
-	parser.add_argument(
-		'--output', type=str, default='./coverage.svg',
-		help='Coverage badge file'
-	)
+    parser.add_argument("--output", type=str, default="./coverage.svg", help="Coverage badge file")
 
-	parser.add_argument(
-		'--colors', type=str, default='red < 50.0 < orange < 75.0 < yellow < 95.0 < green',
-		help='Badge color in format: "color1 < % < color2 < % ... << color_n"'
-	)
+    parser.add_argument(
+        "--colors",
+        type=str,
+        default="red < 50.0 < orange < 75.0 < yellow < 95.0 < green",
+        help='Badge color in format: "color1 < % < color2 < % ... << color_n"',
+    )
 
-	parser.add_argument(
-		'--style', type=str, default=None, required=False,
-		help='Badge style: plastic | flat | flat-square | for-the-badge | social'
-	)
+    parser.add_argument(
+        "--style",
+        type=str,
+        default=None,
+        required=False,
+        help="Badge style: plastic | flat | flat-square | for-the-badge | social",
+    )
 
-	parser.add_argument(
-		'--logo', type=str, default=None, required=False,
-		help='Badge logo: see https://simpleicons.org/ for names of icons'
-	)
+    parser.add_argument(
+        "--logo",
+        type=str,
+        default=None,
+        required=False,
+        help="Badge logo: see https://simpleicons.org/ for names of icons",
+    )
 
-	args = parser.parse_args(argv)
-	options = {}
-	if args.style is not None:
-		options['style'] = args.style
+    args = parser.parse_args(argv)
+    options = {}
+    if args.style is not None:
+        options["style"] = args.style
 
-	return make_badge(
-		report=args.input,
-		badge=args.output,
-		colors=args.colors,
-		options=options,
-	)
+    return make_badge(
+        report=args.input,
+        badge=args.output,
+        colors=args.colors,
+        options=options,
+    )
 
 
-if __name__ == '__main__':
-	raise SystemExit(main())
+if __name__ == "__main__":
+    raise SystemExit(main())
