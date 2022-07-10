@@ -73,7 +73,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 	)
 
 	parser.add_argument(
-		'--output', type=str, default='./images/coverage.svg',
+		'--output', type=str, default='./coverage.svg',
 		help='Coverage badge file'
 	)
 
